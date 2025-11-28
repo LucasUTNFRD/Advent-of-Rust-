@@ -9,5 +9,5 @@ rayon = "1.11.0"
 rustc-hash = "2.1.1"
 
 [[bench]]
-name = "day4_bench"
+name = "day8_bench"
 harness = false

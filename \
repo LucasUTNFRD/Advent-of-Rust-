@@ -1,0 +1,7 @@
+use crate::util::grid::Grid;
+
+pub fn part_1(input: &str) -> u64 {
+    let grid = Grid::parse(input);
+    println!("{grid}");
+    todo!()
+}

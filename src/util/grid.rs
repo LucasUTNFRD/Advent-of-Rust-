@@ -1,4 +1,7 @@
-use std::ops::{Index, IndexMut};
+use std::{
+    fmt,
+    ops::{Index, IndexMut},
+};
 
 use crate::util::point::Point;
 
@@ -17,11 +20,44 @@ use crate::util::point::Point;
 /// Row 0: ───────────┘
 /// Row 1:              ───────────┘
 /// Row 2:                           ───────────┘
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct Grid<T> {
     height: i32,
     width: i32,
     data: Vec<T>,
+}
+
+// 1. Generic Debug: Prints raw values organized by row
+// Usage: println!("{:?}", grid);
+impl<T: fmt::Debug> fmt::Debug for Grid<T> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f, "Grid ({}x{}):", self.width, self.height)?;
+        for y in 0..self.height {
+            write!(f, "  ")?; // Indent
+            for x in 0..self.width {
+                let val = &self.data[(self.width * y + x) as usize];
+                write!(f, "{:?} ", val)?;
+            }
+            writeln!(f)?;
+        }
+        Ok(())
+    }
+}
+
+// 2. Specialized Display for u8: Prints the ASCII characters (Essential for AoC maps)
+// Usage: println!("{}", grid);
+impl fmt::Display for Grid<u8> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f, "Map View ({}x{}):", self.width, self.height)?;
+        for y in 0..self.height {
+            for x in 0..self.width {
+                let val = self.data[(self.width * y + x) as usize];
+                write!(f, "{}", val as char)?;
+            }
+            writeln!(f)?;
+        }
+        Ok(())
+    }
 }
 
 impl Grid<u8> {
@@ -37,6 +73,23 @@ impl Grid<u8> {
             height,
             data: bytes,
         }
+    }
+}
+
+impl<T: Copy + PartialEq> Grid<T> {
+    pub fn find(&self, element: T) -> Option<Point> {
+        self.data.iter().position(|&e| e == element).map(|idx| {
+            let x = (idx as i32) % self.width;
+            let y = (idx as i32) / self.width;
+            Point::new(x, y)
+        })
+    }
+
+    pub fn get(&self, point: Point) -> Option<&T> {
+        if point.x >= self.width && point.y >= self.height {
+            return None;
+        }
+        Some(&self[point])
     }
 }
 
