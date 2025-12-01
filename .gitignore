@@ -1,1 +1,8 @@
 /target
+# Perf profiling data
+perf.data
+perf.data.old
+
+# Flamegraphs
+flamegraph.svg
+*.svg
