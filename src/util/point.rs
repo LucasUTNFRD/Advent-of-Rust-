@@ -1,9 +1,22 @@
-use std::ops::{Add, AddAssign, Mul, Sub, SubAssign};
+use std::{
+    hash::{Hash, Hasher},
+    ops::{Add, AddAssign, Mul, Sub, SubAssign},
+};
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct Point {
     pub x: i32,
     pub y: i32,
+}
+
+impl Hash for Point {
+    #[inline]
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        // NOTE: point coordinate will always be positive
+        state.write_u32(self.x as u32);
+
+        state.write_u32(self.y as u32);
+    }
 }
 
 pub const NORTH: Point = Point { x: 0, y: -1 };

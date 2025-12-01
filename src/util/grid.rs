@@ -1,5 +1,5 @@
 use std::{
-    fmt,
+    fmt::{self, Debug},
     ops::{Index, IndexMut},
 };
 
@@ -74,15 +74,38 @@ impl Grid<u8> {
             data: bytes,
         }
     }
+
+    pub fn copy_maze_with(&self, symbol: u8) -> Self {
+        let mut s = self.clone();
+        s.data.iter_mut().for_each(|b| *b = symbol);
+        s
+    }
 }
 
-impl<T: Copy + PartialEq> Grid<T> {
+impl<T: Copy + PartialEq + Debug> Grid<T> {
     pub fn find(&self, element: T) -> Option<Point> {
         self.data.iter().position(|&e| e == element).map(|idx| {
             let x = (idx as i32) % self.width;
             let y = (idx as i32) / self.width;
             Point::new(x, y)
         })
+    }
+
+    pub fn find_all(&self, element: T) -> Vec<Point> {
+        self.data
+            .iter()
+            .enumerate()
+            .filter_map(|(idx, e)| {
+                if *e == element {
+                    // Calculate point for a match
+                    let x = (idx as i32) % self.width;
+                    let y = (idx as i32) / self.width;
+                    Some(Point::new(x, y)) // Return Some(Point)
+                } else {
+                    None // Return None to discard non-matches
+                }
+            })
+            .collect() // Collects into Vec<Point>
     }
 
     pub fn get(&self, point: Point) -> Option<&T> {

@@ -4,10 +4,18 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-criterion = "0.7.0"
+criterion = "0.8.0"
 rayon = "1.11.0"
 rustc-hash = "2.1.1"
 
 [[bench]]
 name = "day8_bench"
 harness = false
+
+[profile.release]
+debug = "line-tables-only" # Perfect for profiling with 'perf'
+opt-level = 3
+panic = "abort"            # Removes unwinding overhead; essential for AoC
+lto = "fat"                # Enable Fat Link-Time Optimization
+codegen-units = 1          # Sacrifices compile time for better optimization passes
+strip = true               # Optional: strips symbols, reduces binary size

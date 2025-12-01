@@ -6,4 +6,8 @@ run:
     cargo run
 
 run-release:
-    cargo build --release  && ./target/release/aoc-rs
+    cargo run --release
+
+
+build-release:
+    cargo build --release

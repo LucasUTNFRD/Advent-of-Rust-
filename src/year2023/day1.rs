@@ -1,14 +1,11 @@
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
 
-// use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
-
 pub fn parse(input: &str) -> Vec<&str> {
     input.lines().collect()
 }
 
 pub fn part_1(input: &[&str]) -> u32 {
     input
-        // .par_iter()
         .iter()
         .map(|line| {
             let mut digits = line.chars().filter_map(|c| c.to_digit(10));
