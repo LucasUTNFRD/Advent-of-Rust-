@@ -1,4 +1,4 @@
-use std::collections::HashSet;
+use rustc_hash::FxHashSet as HashSet;
 
 pub fn parse(input: &str) -> Vec<(u64, u64)> {
     input
@@ -46,56 +46,56 @@ fn generate_repeated_sequences(n: u32) -> impl Iterator<Item = u64> {
     (start..end).map(move |x| x * multiplier)
 }
 
+#[inline(never)]
 pub fn part_2(ids: &[(u64, u64)]) -> u64 {
     ids.iter()
-        .map(|&id_range| {
-            get_invalid_ids_part_2(id_range).map_or(0, |invalid_ids| invalid_ids.iter().sum())
-        })
+        .map(|&id_range| get_invalid_ids_part_2(id_range))
         .sum()
 }
 
-fn get_invalid_ids_part_2(id_range: (u64, u64)) -> Option<Vec<u64>> {
+#[inline(never)]
+fn get_invalid_ids_part_2(id_range: (u64, u64)) -> u64 {
     let (start, end): (u64, u64) = (id_range.0, id_range.1);
 
     let start_len = if start == 0 { 1 } else { start.ilog10() + 1 };
     let end_len = end.ilog10() + 1;
 
-    let invalid_ids: Vec<_> = (start_len..=end_len)
-        .flat_map(|total_digits| {
-            // Find all divisors of total_digits to get pattern lengths
-            let divisors: Vec<u32> = (1..=total_digits)
-                .filter(|&d| total_digits % d == 0 && d < total_digits)
-                .collect();
+    let unique_invalid_ids: HashSet<u64> = (start_len..=end_len)
+        .flat_map(generate_sequence_part_2)
+        .filter(|&n| n >= start && n <= end)
+        .collect(); // FIX: Remove this Collect as HashSet for this generate_sequence MUST NOT produce repeated sequences
 
-            divisors.into_iter().flat_map(move |pattern_len| {
-                let repeats = total_digits / pattern_len;
-                if repeats < 2 {
-                    return vec![];
-                }
+    // 2. Sum the elements of the HashSet.
+    unique_invalid_ids.into_iter().sum()
+}
 
-                let pattern_start = 10_u64.pow(pattern_len - 1);
-                let pattern_end = 10_u64.pow(pattern_len);
-
-                (pattern_start..pattern_end)
-                    .map(|pattern| {
-                        let pattern_str = pattern.to_string();
-                        let repeated = pattern_str.repeat(repeats as usize);
-                        repeated.parse::<u64>().unwrap()
-                    })
-                    .collect::<Vec<_>>()
-            })
-        })
-        .filter(|n| (start..=end).contains(n))
+#[inline(never)]
+fn generate_sequence_part_2(total_digits: u32) -> impl Iterator<Item = u64> {
+    // Find all divisors of total_digits to get pattern lengths
+    let divisors: Vec<u32> = (1..=total_digits)
+        .filter(|&d| total_digits.is_multiple_of(d) && d < total_digits)
         .collect();
 
-    if invalid_ids.is_empty() {
-        None
-    } else {
-        let unique_nums: HashSet<_> = invalid_ids.into_iter().collect();
-        let invalid_id: Vec<_> = unique_nums.into_iter().collect();
+    divisors.into_iter().flat_map(move |pattern_len| {
+        let repeats = total_digits / pattern_len;
 
-        Some(invalid_id)
-    }
+        let pattern_start = 10_u64.pow(pattern_len - 1);
+        let pattern_end = 10_u64.pow(pattern_len);
+
+        (pattern_start..pattern_end).map(move |pattern| {
+            // HOT AFFF
+            // let pattern_str = pattern.to_string();
+            // let repeated = pattern_str.repeat(repeats as usize);
+            // repeated.parse::<u64>().unwrap()
+            let mut result = 0u64;
+            let multiplier = 10u64.pow(pattern_len);
+            for _ in 0..repeats {
+                result = result * multiplier * pattern;
+            }
+            result
+        })
+        // .collect::<Vec<_>>()
+    })
 }
 
 #[cfg(test)]
