@@ -15,7 +15,7 @@ pub fn part_1(input: &str) -> usize {
         }
         .rem_euclid(N);
 
-        count = usize::from(dial == 0);
+        count += usize::from(dial == 0);
     }
 
     count

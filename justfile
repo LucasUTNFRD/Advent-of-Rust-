@@ -11,3 +11,6 @@ run-release:
 
 build-release:
     cargo build --release
+
+flamegraph:
+    cargo flamegraph --release && brave "flamegraph.svg"
