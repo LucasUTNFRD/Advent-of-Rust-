@@ -57,7 +57,7 @@ pub fn part_2(ids: &[(u64, u64)]) -> u64 {
 fn get_invalid_ids_part_2(id_range: (u64, u64)) -> u64 {
     let (start, end): (u64, u64) = (id_range.0, id_range.1);
 
-    let start_len = if start == 0 { 1 } else { start.ilog10() + 1 };
+    let start_len = start.ilog10() + 1;
     let end_len = end.ilog10() + 1;
 
     let unique_invalid_ids: HashSet<u64> = (start_len..=end_len)
@@ -83,16 +83,16 @@ fn generate_sequence_part_2(total_digits: u32) -> impl Iterator<Item = u64> {
         let pattern_end = 10_u64.pow(pattern_len);
 
         (pattern_start..pattern_end).map(move |pattern| {
+            let mut result = 0u64;
+            let multiplier = 10u64.pow(pattern_len);
+            for _ in 0..repeats {
+                result = result * multiplier + pattern;
+            }
+            result
             // HOT AFFF
             // let pattern_str = pattern.to_string();
             // let repeated = pattern_str.repeat(repeats as usize);
             // repeated.parse::<u64>().unwrap()
-            let mut result = 0u64;
-            let multiplier = 10u64.pow(pattern_len);
-            for _ in 0..repeats {
-                result = result * multiplier * pattern;
-            }
-            result
         })
         // .collect::<Vec<_>>()
     })
