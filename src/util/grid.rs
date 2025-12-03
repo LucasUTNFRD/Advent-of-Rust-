@@ -5,21 +5,6 @@ use std::{
 
 use crate::util::point::Point;
 
-/// Flattened 1D array (Vec<T>)
-/// let grid_1d = vec!['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
-/// let width = 3;
-///
-/// // Access: grid_1d[width * y + x]
-/// let value = grid_1d[width * 1 + 2]; // grid_1d[5] = 'F'
-/// ```
-///
-/// **Memory Layout (identical for both)**
-/// ```
-/// Index:  0    1    2    3    4    5    6    7    8
-/// Value: 'A' 'B' 'C' 'D' 'E' 'F' 'G' 'H' 'I'
-/// Row 0: ───────────┘
-/// Row 1:              ───────────┘
-/// Row 2:                           ───────────┘
 #[derive(Clone, PartialEq, Eq)]
 pub struct Grid<T> {
     height: i32,
