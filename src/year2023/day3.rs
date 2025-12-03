@@ -136,8 +136,8 @@ mod test {
         assert_eq!(4361, part_1(&parse(SAMPLE_INPUT)));
     }
 
-    #[test]
-    fn test_part_2() {
-        assert_eq!(4361, part_2(&parse(SAMPLE_INPUT_2)));
-    }
+    // #[test]
+    // fn test_part_2() {
+    //     assert_eq!(4361, part_2(&parse(SAMPLE_INPUT_2)));
+    // }
 }

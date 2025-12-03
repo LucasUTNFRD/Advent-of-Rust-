@@ -46,14 +46,12 @@ fn generate_repeated_sequences(n: u32) -> impl Iterator<Item = u64> {
     (start..end).map(move |x| x * multiplier)
 }
 
-#[inline(never)]
 pub fn part_2(ids: &[(u64, u64)]) -> u64 {
     ids.iter()
         .map(|&id_range| get_invalid_ids_part_2(id_range))
         .sum()
 }
 
-#[inline(never)]
 fn get_invalid_ids_part_2(id_range: (u64, u64)) -> u64 {
     let (start, end): (u64, u64) = (id_range.0, id_range.1);
 
@@ -69,7 +67,6 @@ fn get_invalid_ids_part_2(id_range: (u64, u64)) -> u64 {
     unique_invalid_ids.into_iter().sum()
 }
 
-#[inline(never)]
 fn generate_sequence_part_2(total_digits: u32) -> impl Iterator<Item = u64> {
     // Find all divisors of total_digits to get pattern lengths
     let divisors: Vec<u32> = (1..=total_digits)
@@ -89,12 +86,7 @@ fn generate_sequence_part_2(total_digits: u32) -> impl Iterator<Item = u64> {
                 result = result * multiplier + pattern;
             }
             result
-            // HOT AFFF
-            // let pattern_str = pattern.to_string();
-            // let repeated = pattern_str.repeat(repeats as usize);
-            // repeated.parse::<u64>().unwrap()
         })
-        // .collect::<Vec<_>>()
     })
 }
 
