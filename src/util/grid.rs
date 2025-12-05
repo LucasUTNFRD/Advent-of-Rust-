@@ -7,9 +7,9 @@ use crate::util::point::Point;
 
 #[derive(Clone, PartialEq, Eq)]
 pub struct Grid<T> {
-    height: i32,
-    width: i32,
-    data: Vec<T>,
+    pub height: i32,
+    pub width: i32,
+    pub data: Vec<T>,
 }
 
 // 1. Generic Debug: Prints raw values organized by row
@@ -94,10 +94,17 @@ impl<T: Copy + PartialEq + Debug> Grid<T> {
     }
 
     pub fn get(&self, point: Point) -> Option<&T> {
-        if point.x >= self.width && point.y >= self.height {
+        if point.x >= self.width || point.y >= self.height || point.x < 0 || point.y < 0 {
             return None;
         }
         Some(&self[point])
+    }
+
+    pub fn get_mut(&mut self, point: Point) -> Option<&mut T> {
+        if point.x >= self.width || point.y >= self.height || point.x < 0 || point.y < 0 {
+            return None;
+        }
+        Some(&mut self[point])
     }
 }
 
