@@ -15,8 +15,9 @@ fn main() {
         solution_part_1, duration_part_1
     );
 
+    // let input = year2025::day06::parse_part2(&data);
     let start = Instant::now();
-    let solution_part_2 = year2025::day06::part_2(&input);
+    let solution_part_2 = year2025::day06::part_2(&data);
     let duration_part_2 = start.elapsed();
     println!(
         "Day 4 - Part 2 solution {} - elapsed {:#?}",

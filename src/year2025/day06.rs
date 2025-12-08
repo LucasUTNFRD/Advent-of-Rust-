@@ -1,3 +1,5 @@
+use std::{ops::Range, vec};
+
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 enum Ops {
     Add,
@@ -31,7 +33,6 @@ pub fn parse(input: &str) -> Input {
     Input { ops, inputs }
 }
 pub fn part_1(input: &Input) -> u64 {
-    // let amount_of_outputs = input.ops.len();
     let mut outputs: Vec<u64> = input
         .ops
         .iter()
@@ -52,9 +53,74 @@ pub fn part_1(input: &Input) -> u64 {
     outputs.iter().sum()
 }
 
-// GOD SAVE US ALL
-pub fn part_2(input: &Input) -> u64 {
-    todo!()
+pub fn part_2(input: &str) -> u64 {
+    let mut lines = input.lines().rev();
+
+    let mut ops = vec![];
+    let mut ops_idx = vec![];
+
+    for (idx, op) in lines
+        .next()
+        .unwrap()
+        .chars()
+        .enumerate()
+        .filter(|(_idx, char)| !char.is_whitespace())
+    {
+        if op == '*' {
+            ops.push(Ops::Mul);
+        } else {
+            ops.push(Ops::Add);
+        }
+
+        ops_idx.push(idx);
+    }
+
+    let lines: Vec<_> = lines.collect();
+    let line_len = lines[0].len();
+
+    let mut range_vec: Vec<Range<usize>> = Vec::new();
+    for window in ops_idx.windows(2) {
+        let start = window[0];
+        let end = window[1] - 1; // The range ends just before the next start
+        range_vec.push(start..end);
+    }
+
+    if let Some(&last_start) = ops_idx.last() {
+        range_vec.push(last_start..line_len);
+    }
+
+    let mut problems = Vec::new();
+
+    for range in range_vec.iter() {
+        let mut problem = Vec::new();
+        for line in lines.iter() {
+            let sub_problem = line[range.clone()].to_string();
+            problem.push(sub_problem);
+        }
+        problems.push(problem);
+    }
+
+    let mut count = 0;
+    for (cols, &ops) in problems.iter().zip(ops.iter()) {
+        let str_len = cols[0].len();
+        let col_len = cols.len();
+
+        // str_len vec of strs of col_len len
+        let mut problems = vec![String::with_capacity(col_len); str_len];
+        for sub_cols in cols.iter().rev() {
+            for (idx, c) in sub_cols.chars().enumerate() {
+                problems[idx].push(c);
+            }
+        }
+
+        let problems = problems.iter().map(|s| s.trim().parse::<u64>().unwrap());
+        count += match ops {
+            Ops::Add => problems.sum::<u64>(),
+            Ops::Mul => problems.product(),
+        };
+    }
+
+    count
 }
 
 #[cfg(test)]
@@ -69,5 +135,10 @@ mod test {
     fn test_part_1() {
         let input = parse(SAMPLE_INPUT);
         assert_eq!(4277556, part_1(&input))
+    }
+
+    #[test]
+    fn test_part_2() {
+        assert_eq!(3263827, part_2(SAMPLE_INPUT))
     }
 }
