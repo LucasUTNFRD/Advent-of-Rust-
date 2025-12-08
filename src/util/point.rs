@@ -12,9 +12,7 @@ pub struct Point {
 impl Hash for Point {
     #[inline]
     fn hash<H: Hasher>(&self, state: &mut H) {
-        // NOTE: point coordinate will always be positive
         state.write_u32(self.x as u32);
-
         state.write_u32(self.y as u32);
     }
 }
@@ -23,6 +21,8 @@ pub const NORTH: Point = Point { x: 0, y: -1 };
 pub const SOUTH: Point = Point { x: 0, y: 1 };
 pub const EAST: Point = Point { x: 1, y: 0 };
 pub const WEST: Point = Point { x: -1, y: 0 };
+pub const SOUTH_EAST: Point = Point { x: 1, y: 1 };
+pub const SOUTH_WEST: Point = Point { x: -1, y: 1 };
 
 pub const DIRECTIONS: [Point; 8] = [
     Point::new(1, 0),

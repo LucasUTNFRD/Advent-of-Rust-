@@ -32,25 +32,20 @@ pub fn parse(input: &str) -> Input {
 
     Input { ops, inputs }
 }
+
 pub fn part_1(input: &Input) -> u64 {
-    let mut outputs: Vec<u64> = input
-        .ops
+    input.inputs[0]
         .iter()
-        .map(|&op| if op == Ops::Add { 0 } else { 1 })
-        .collect();
-
-    for (idx, &op) in input.ops.iter().enumerate() {
-        let op: fn(u64, u64) -> u64 = match op {
-            Ops::Add => |a, b| a + b,
-            Ops::Mul => |a, b| a * b,
-        };
-
-        for input_vec in input.inputs.iter() {
-            outputs[idx] = op(outputs[idx], input_vec[idx]);
-        }
-    }
-
-    outputs.iter().sum()
+        .enumerate()
+        .map(|(idx, &first)| {
+            input.inputs[1..]
+                .iter()
+                .fold(first, |acc, row| match input.ops[idx] {
+                    Ops::Add => acc + row[idx],
+                    Ops::Mul => acc * row[idx],
+                })
+        })
+        .sum()
 }
 
 pub fn part_2(input: &str) -> u64 {
