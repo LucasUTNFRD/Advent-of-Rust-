@@ -13,7 +13,7 @@ pub fn parse(input: &str) -> (Grid<u8>, Point) {
 
 pub fn part_1((grid, starting_point): &(Grid<u8>, Point)) -> u64 {
     let mut visited: HashSet<Point> = HashSet::default();
-    let mut stack = vec![*starting_point; 100];
+    let mut stack = vec![*starting_point];
     visited.insert(*starting_point);
 
     let mut count = 0;
