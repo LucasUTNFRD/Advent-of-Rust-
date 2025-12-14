@@ -43,6 +43,10 @@ impl Point {
     pub fn coords(&self) -> (i32, i32) {
         (self.x, self.y)
     }
+
+    pub fn dot(self, other: Point) -> i32 {
+        self.x * other.x + self.y * other.y
+    }
 }
 
 impl Add for Point {

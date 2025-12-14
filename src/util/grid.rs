@@ -112,13 +112,13 @@ impl<T> Index<(i32, i32)> for Grid<T> {
     type Output = T;
 
     fn index(&self, index: (i32, i32)) -> &Self::Output {
-        &self.data[(self.width * index.0 + index.1) as usize]
+        &self.data[(self.width * index.1 + index.0) as usize]
     }
 }
 
 impl<T> IndexMut<(i32, i32)> for Grid<T> {
     fn index_mut(&mut self, index: (i32, i32)) -> &mut Self::Output {
-        &mut self.data[(self.width * index.0 + index.1) as usize]
+        &mut self.data[(self.width * index.1 + index.0) as usize]
     }
 }
 
@@ -133,5 +133,15 @@ impl<T> Index<Point> for Grid<T> {
 impl<T> IndexMut<Point> for Grid<T> {
     fn index_mut(&mut self, index: Point) -> &mut Self::Output {
         &mut self.data[(self.width * index.y + index.x) as usize]
+    }
+}
+
+impl<T: Copy> Grid<T> {
+    pub fn new(width: i32, height: i32, value: T) -> Grid<T> {
+        Grid {
+            width,
+            height,
+            data: vec![value; (width * height) as usize],
+        }
     }
 }
