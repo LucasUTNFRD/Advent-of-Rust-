@@ -3,12 +3,12 @@ use std::{fs::read_to_string, time::Instant};
 use aoc_rs::year2025;
 
 fn main() {
-    let data = read_to_string("inputs/year2025/day09.txt").unwrap();
+    let data = read_to_string("inputs/year2025/day10.txt").unwrap();
 
-    let input = year2025::day09::parse(&data);
+    // let input = year2025::day10::parse(&data);
 
     let start = Instant::now();
-    let solution_part_1 = year2025::day09::part_1(&input);
+    let solution_part_1 = year2025::day10::part_1(&data);
     let duration_part_1 = start.elapsed();
     println!(
         "Day 7 - Part 1 solution {} - elapsed {:#?}",
@@ -17,7 +17,7 @@ fn main() {
 
     // let input = year2025::day06::parse_part2(&data);
     let start = Instant::now();
-    let solution_part_2 = year2025::day09::part_2(&input);
+    let solution_part_2 = year2025::day10::part_2(&data);
     let duration_part_2 = start.elapsed();
     println!(
         "Day 7 - Part 2 solution {} - elapsed {:#?}",

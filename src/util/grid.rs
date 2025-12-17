@@ -93,6 +93,7 @@ impl<T: Copy + PartialEq + Debug> Grid<T> {
             .collect() // Collects into Vec<Point>
     }
 
+    // #[inline(never)]
     pub fn get(&self, point: Point) -> Option<&T> {
         if point.x >= self.width || point.y >= self.height || point.x < 0 || point.y < 0 {
             return None;
