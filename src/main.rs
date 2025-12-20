@@ -5,13 +5,13 @@ use aoc_rs::year2025;
 fn main() {
     let data = read_to_string("inputs/year2025/day10.txt").unwrap();
 
-    // let input = year2025::day10::parse(&data);
+    let data = year2025::day10::parse(&data);
 
     let start = Instant::now();
     let solution_part_1 = year2025::day10::part_1(&data);
     let duration_part_1 = start.elapsed();
     println!(
-        "Day 7 - Part 1 solution {} - elapsed {:#?}",
+        "Day 10 - Part 1 solution {} - elapsed {:#?}",
         solution_part_1, duration_part_1
     );
 
@@ -20,7 +20,7 @@ fn main() {
     let solution_part_2 = year2025::day10::part_2(&data);
     let duration_part_2 = start.elapsed();
     println!(
-        "Day 7 - Part 2 solution {} - elapsed {:#?}",
+        "Day 10 - Part 2 solution {} - elapsed {:#?}",
         solution_part_2, duration_part_2
     );
 }

@@ -9,6 +9,7 @@ criterion = "0.8.0"
 itertools = "0.14.0"
 rayon = "1.11.0"
 rustc-hash = "2.1.1"
+z3 = { version = "0", features = ["gh-release"] }
 
 [[bench]]
 name = "day8_bench"

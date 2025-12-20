@@ -1,6 +1,9 @@
 use std::{collections::VecDeque, ops::BitXor};
 
 use bitvec::prelude::*;
+use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
+use z3::ast::Int;
+use z3::{Optimize, SatResult};
 
 #[derive(Debug, Hash, PartialEq, Eq, Clone, Copy)]
 struct Indicator {
@@ -36,10 +39,15 @@ impl Indicator {
         }
         Indicator { bytes: bits }
     }
+
+    pub fn is_set(&self, index: u8) -> bool {
+        // Matches the logic in parse: bits |= 1 << i
+        (self.bytes & (1 << index)) != 0
+    }
 }
 
 // The manual describes one machine per line. Each line contains a single indicator light diagram in [square brackets], one or more button wiring schematics in (parentheses), and joltage requirements in {curly braces}.
-fn line_parser(line: &str) -> (Indicator, Vec<Indicator>, Vec<u32>) {
+fn line_parser(line: &str) -> Input {
     let bracket_start = line.find("[").unwrap() + 1;
     let bracket_end = line.find("]").unwrap();
 
@@ -63,16 +71,28 @@ fn line_parser(line: &str) -> (Indicator, Vec<Indicator>, Vec<u32>) {
         })
         .collect();
 
-    (indicator, button_wiring, joltage)
+    Input {
+        indicator,
+        button_wiring,
+        joltage,
+    }
 }
 
-pub fn part_1(input: &str) -> u32 {
-    let parsed_lines = input.lines().map(line_parser);
+#[derive(Debug)]
+pub struct Input {
+    indicator: Indicator,
+    button_wiring: Vec<Indicator>,
+    pub(crate) joltage: Vec<u32>,
+}
 
-    parsed_lines
-        .map(|(indicator_light, buttom_wiring, _)| {
-            min_buttom_press(indicator_light, buttom_wiring.as_slice()) as u32
-        })
+pub fn parse(input: &str) -> Vec<Input> {
+    input.lines().map(line_parser).collect()
+}
+
+pub fn part_1(input: &[Input]) -> u32 {
+    input
+        .iter()
+        .map(|input| min_buttom_press(input.indicator, input.button_wiring.as_slice()) as u32)
         .sum()
 }
 
@@ -98,9 +118,62 @@ fn min_buttom_press(expected: Indicator, wirings: &[Indicator]) -> usize {
         }
     }
 
-    unreachable!()
+    0
 }
 
-pub fn part_2(input: &str) -> u32 {
-    todo!()
+pub fn part_2(input: &[Input]) -> u32 {
+    input
+        .par_iter()
+        .map(|input| {
+            min_buttom_press_constrained_by_joltage(
+                input.button_wiring.as_slice(),
+                input.joltage.as_slice(),
+            )
+        })
+        .sum()
+}
+
+fn min_buttom_press_constrained_by_joltage(wirings: &[Indicator], joltage: &[u32]) -> u32 {
+    let opt = Optimize::new();
+
+    let x: Vec<Int> = (0..wirings.len())
+        .map(|i| Int::new_const(format!("btn_{}", i)))
+        .collect();
+
+    let zero = Int::from_i64(0);
+
+    for var in &x {
+        opt.assert(&var.ge(&zero));
+    }
+
+    // 4. Build Linear Equations
+    // For each joltage counter (row in the system), sum the contributions of relevant buttons.
+    for (counter_idx, &target_val) in joltage.iter().enumerate() {
+        let mut sum_expr = Int::from_i64(0);
+
+        for (btn_idx, wiring) in wirings.iter().enumerate() {
+            // Your is_set helper is perfect here
+            if wiring.is_set(counter_idx as u8) {
+                sum_expr = &sum_expr + &x[btn_idx];
+            }
+        }
+
+        // Constraint: Sum of button presses == Target Joltage
+        let target = Int::from_i64(target_val as i64);
+        opt.assert(&sum_expr.eq(&target));
+    }
+
+    let total_presses = x.iter().fold(Int::from_i64(0), |acc, v| acc + v);
+    opt.minimize(&total_presses);
+
+    match opt.check(&[]) {
+        SatResult::Sat => {
+            let model = opt.get_model().unwrap();
+            model
+                .eval(&total_presses, true)
+                .and_then(|r| r.as_u64())
+                .unwrap_or(0) as u32
+        }
+        _ => unreachable!(),
+    }
 }
