@@ -5,7 +5,7 @@ use aoc_rs::year2025;
 fn main() {
     let data = read_to_string("inputs/year2025/day11.txt").unwrap();
 
-    // let data = year2025::day11::parse(&data);
+    let data = year2025::day11::parse(&data);
 
     let start = Instant::now();
     let solution_part_1 = year2025::day11::part_1(&data);
