@@ -36,7 +36,6 @@ pub fn part_2(input: &str) -> u128 {
         device_kv
     };
 
-    // SEQUENCE 1: svr -> fft -> dac -> GOAL
     let seq_1 = {
         let mut m1 = HashMap::default();
         let s1 = dfs("svr", &device_kv, &mut m1, "fft");
@@ -49,7 +48,7 @@ pub fn part_2(input: &str) -> u128 {
 
         s1 * s2 * s3
     };
-
+    //
     // SEQUENCE 2: svr -> dac -> fft -> GOAL
     let seq_2 = {
         let mut m1 = HashMap::default();
