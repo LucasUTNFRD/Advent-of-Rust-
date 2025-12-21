@@ -27,33 +27,32 @@ pub fn part_1(graph: &Graph) -> u64 {
 }
 
 pub fn part_2(graph: &Graph) -> u64 {
-    // SEQUENCE 2: svr -> fft -> dac -> GOAL
-    let mut map =
+    let mut memo =
         HashMap::with_capacity_and_hasher(graph.device_graph.len(), rustc_hash::FxBuildHasher);
-    let s1 = dfs("svr", graph, &mut map, "fft");
 
-    map.clear();
-    let s2 = dfs("fft", graph, &mut map, "dac");
+    // SEQUENCE 1: svr -> fft -> dac -> GOAL
+    let seq1 = {
+        let s1 = dfs("svr", graph, &mut memo, "fft");
+        memo.clear();
+        let s2 = dfs("fft", graph, &mut memo, "dac");
+        memo.clear();
+        let s3 = dfs("dac", graph, &mut memo, GOAL);
+        s1 * s2 * s3
+    };
 
-    map.clear();
-    let s3 = dfs("dac", graph, &mut map, GOAL);
+    memo.clear();
 
-    let seq_1 = s1 * s2 * s3;
+    // SEQUENCE 2: svr -> dac -> fft-> GOAL
+    let seq2 = {
+        let s1 = dfs("svr", graph, &mut memo, "dac");
+        memo.clear();
+        let s2 = dfs("dac", graph, &mut memo, "fft");
+        memo.clear();
+        let s3 = dfs("fft", graph, &mut memo, GOAL);
+        s1 * s2 * s3
+    };
 
-    // SEQUENCE 2: svr -> dac -> fft -> GOAL
-    map.clear();
-    let s1 = dfs("svr", graph, &mut map, "dac");
-
-    map.clear();
-    let s2 = dfs("dac", graph, &mut map, "fft");
-
-    map.clear();
-    let s3 = dfs("fft", graph, &mut map, GOAL);
-
-    let seq_2 = s1 * s2 * s3;
-    // };
-
-    seq_2 + seq_1
+    seq1 + seq2
 }
 
 fn dfs<'a>(curr: &'a str, graph: &'a Graph, memo: &mut HashMap<&'a str, u64>, goal: &str) -> u64 {
@@ -68,9 +67,9 @@ fn dfs<'a>(curr: &'a str, graph: &'a Graph, memo: &mut HashMap<&'a str, u64>, go
     let mut total_paths = 0;
 
     if let Some(neighbors) = graph.device_graph.get(curr) {
-        for next in neighbors {
+        neighbors.iter().for_each(|next| {
             total_paths += dfs(next, graph, memo, goal);
-        }
+        });
     }
 
     // Store in Cache and Return
